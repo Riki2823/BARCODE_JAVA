@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="codes">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/out/production/Barcodes/imgs/codes.zip!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

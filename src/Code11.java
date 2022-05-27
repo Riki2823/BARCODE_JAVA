@@ -9,7 +9,6 @@
 
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 public class Code11 {
@@ -339,7 +338,7 @@ public class Code11 {
 
     // Decodifica una imatge. La imatge ha d'estar en format "ppm"
     public static String decodeImage(String str) {
-        Pixels pixels = new Pixels(str);
+        Image pixels = new Image(str);
         for (int i = 0; i < pixels.pixels.length; i++) {
             int red = Integer.parseInt(pixels.pixels[i][0]);
             int green = Integer.parseInt(pixels.pixels[i][1]);
