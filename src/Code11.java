@@ -338,13 +338,25 @@ public class Code11 {
 
     // Decodifica una imatge. La imatge ha d'estar en format "ppm"
     public static String decodeImage(String str) {
+        String aux = "";
         Image pixels = new Image(str);
-        for (int i = 0; i < pixels.pixels.length; i++) {
+        int ancho = Integer.parseInt(pixels.ancho);
+        int[][] pixel = new int[(Integer.parseInt(pixels.altura))][1];
+        for (int i = 0; i < ancho; i++) {
             int red = Integer.parseInt(pixels.pixels[i][0]);
             int green = Integer.parseInt(pixels.pixels[i][1]);
             int blue = Integer.parseInt(pixels.pixels[i][2]);
-                
+            pixel[i][0] = (red+green+blue)/3;
+            System.out.printf("a");
         }
+        for (int i = 0; i < ancho; i++) {
+            if (pixel[i][0] >=100){
+                aux += "█";
+            }else {
+                aux += " ";
+            }
+        }
+        String result = decode(aux);
         return "";
     }
 

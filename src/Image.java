@@ -7,6 +7,16 @@ public class Image {
     Image(String codiPPM){
         this.codiPPM = codiPPM;
         this.pixels = pixelsMaker(codiPPM);
+        String [] tamaños = setTamaño(codiPPM);
+        this.altura = tamaños[0];
+        this.ancho = tamaños[1];
+        System.out.printf("a");
+    }
+
+    private String[] setTamaño(String codiPPM) {
+        String[] codiSep = codiPPM.split("\n");
+        String[] tamaños = codiSep[2].split(" ");
+        return tamaños;
     }
 
     private String[][] pixelsMaker(String codiPPM) {
