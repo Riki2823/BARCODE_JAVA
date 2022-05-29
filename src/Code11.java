@@ -358,6 +358,7 @@ public class Code11 {
         }
         String result = decode(aux);
         return "";
+
     }
 
     // Genera imatge a partir de codi de barres
