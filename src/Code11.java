@@ -107,18 +107,18 @@ public class Code11 {
 
         int aux = 0;
 
-        String result = setFinalCode(big, little, barcodeS,aux);
-        if (result.equals("ERROR")){
+        String result = setFinalCode(big, little, barcodeS, aux);
+        if (result.equals("ERROR")) {
             return null;
         }
 
 
-        if (result.charAt(0) != '*'){
+        if (result.charAt(0) != '*') {
             boolean state = true;
-            while (state){
+            while (state) {
                 aux++;
-                result = setFinalCode(big, little, barcodeS,aux);
-                if (result.charAt(0) == '*'){
+                result = setFinalCode(big, little, barcodeS, aux);
+                if (result.charAt(0) == '*') {
                     state = false;
                 }
             }
@@ -128,8 +128,8 @@ public class Code11 {
     }
 
     /*Tenemos una funcion que lo que haces es traducir el string con caracteres de barras a un array de string en el que tenemos un 1 cuando encontramos
-    * una barra, un 0 cuando encontramos un espacio y un 9 cuando encontramos un espacion que nos indica que hemos cambiado de caracter, por ejemplo como en el codigo *0* tenemos 3 caracteres en nuestro array
-    * tendremos dos 9 que nos indican la separacion del * con el 0 y la separacion del 0 con el segundo * */
+     * una barra, un 0 cuando encontramos un espacio y un 9 cuando encontramos un espacion que nos indica que hemos cambiado de caracter, por ejemplo como en el codigo *0* tenemos 3 caracteres en nuestro array
+     * tendremos dos 9 que nos indican la separacion del * con el 0 y la separacion del 0 con el segundo * */
     private static String[] barCodeCode(String s) {
         /*
          * false = espai
@@ -195,9 +195,9 @@ public class Code11 {
                 small = sizes.get(i);
             }
         }
-        if (type == 1 ){
+        if (type == 1) {
             return big;
-        }else if (type == 2){
+        } else if (type == 2) {
             return small;
         }
 
@@ -205,7 +205,7 @@ public class Code11 {
     }
 
     /*En esta funcion encontramos diversas funcionalidades pero la principal es la de pasar el codigo tipo string que nos mide pixel por pixel el string original a un codigo de 5 digitos que nos indica el grosor de un espacio
-    * o parte dibujada en funcion de su valor y posicion de estos valores*/
+     * o parte dibujada en funcion de su valor y posicion de estos valores*/
     private static String setFinalCode(int big, int little, String barcodeS, int aux) {
         String code = "";
         //Lo primero que hacemos es llamar a una funcion que nos pasa el string de codigo a una lista con todos los tamaños posibles de el string
@@ -215,26 +215,26 @@ public class Code11 {
         sizes.removeAll(Collections.singleton(0));
 
         //Si una vez eliminados los 0s el tamaño de nuestra lista no se puede dividir de manera exacta entre 0 esto nos indica que se ha leido mal el codigo
-        if (sizes.size()%5 != 0){
+        if (sizes.size() % 5 != 0) {
             return "ERROR";
         }
 
         //En este string vamos a guardar los codigos de cada caracter que queremos decodificar
-        String[] codes = new String[(sizes.size()/5)];
+        String[] codes = new String[(sizes.size() / 5)];
 
         int index = 0;
 
         big = big - aux;
 
         for (int i = 0; i < sizes.size(); i++) {
-            if (code.length() == 5){
+            if (code.length() == 5) {
                 codes[index] = code;
                 code = "";
                 index++;
             }
-            if (sizes.get(i) >= big){
-                code+= "1";
-            }else {
+            if (sizes.get(i) >= big) {
+                code += "1";
+            } else {
                 code += "0";
             }
         }
@@ -342,23 +342,38 @@ public class Code11 {
         str = str.replace("\r", "");
         Image pixels = new Image(str);
 
-        List<Integer> pixel = new ArrayList<>();
-        for (int i = 0; i < pixels.ancho; i++) {
-            int red = Integer.parseInt(pixels.pixels[i][0]);
-            int green = Integer.parseInt(pixels.pixels[i][1]);
-            int blue = Integer.parseInt(pixels.pixels[i][2]);
-            pixel.add((red+green+blue)/3);
+        int[][] indvPixel = setIndividualPixel(pixels);
+        String result = "";
+        for (int i = 0; i < pixels.altura; i++) {
+            for (int j = 0; j < pixels.ancho; j++) {
+                if (indvPixel[i][j] >= 100) {
+                    aux += " ";
+                } else {
+                    aux += "█";
+                }
+            }
+            result = decode(aux);
+
         }
-        for (int i = 0; i < pixels.ancho; i++) {
-            if (pixel.get(i) >=100){
-                aux += " ";
-            }else {
-                aux += "█";
+
+        return null;
+
+    }
+
+    private static int[][] setIndividualPixel(Image pixels) {
+        int[][] indvPixel = new int[pixels.altura][pixels.ancho];
+        int index = 0;
+        for (int i = 0; i < pixels.altura; i++) {
+            for (int j = 0; j < pixels.ancho; j++) {
+                int red = Integer.parseInt(pixels.pixels[index][0]);
+                int green = Integer.parseInt(pixels.pixels[index][1]);
+                int blue = Integer.parseInt(pixels.pixels[index][2]);
+                int RGB = (red + green + blue) / 3;
+                indvPixel[i][j] = RGB;
+                index++;
             }
         }
-        String result = decode(aux);
-        return result;
-
+        return indvPixel;
     }
 
     // Genera imatge a partir de codi de barres
