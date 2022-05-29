@@ -343,8 +343,6 @@ public class Code11 {
         Image pixels = new Image(str);
 
         List<Integer> pixel = new ArrayList<>();
-        int altura = pixels.altura;
-        int ancho  = pixels.ancho;
         for (int i = 0; i < pixels.ancho; i++) {
             int red = Integer.parseInt(pixels.pixels[i][0]);
             int green = Integer.parseInt(pixels.pixels[i][1]);
