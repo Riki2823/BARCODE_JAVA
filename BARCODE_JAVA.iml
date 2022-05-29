@@ -48,5 +48,6 @@
         <SOURCES />
       </library>
     </orderEntry>
+    <orderEntry type="library" name="junit-jupiter-5.8.2" level="application" />
   </component>
 </module>
