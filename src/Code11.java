@@ -229,14 +229,13 @@ public class Code11 {
         String[] codes = makeCodes(sizes, big, code, aux);
 
         StringBuilder strBuilded = new StringBuilder(barcodeS);
-        if (codes[0].equals("00100")){
+        if (!codes[0].equals("00110")){
             StringBuilder strReveresed = strBuilded.reverse();
             barcodeS = strReveresed.toString();
             code = "";
             sizes = sizeColector(barcodeS);
             sizes.removeAll(Collections.singleton(0));
-            codes = makeCodes(sizes,big,code,aux);
-        }
+            codes = makeCodes(sizes,big,code,aux);}
         //Llamamos a esta funcion que nos consigue dar en funcion de los codigos que pasamos el string final con el codigo ya decodificado
         String finalCode = listCodes(codes);
         return finalCode;
