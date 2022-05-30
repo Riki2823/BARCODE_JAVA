@@ -96,6 +96,9 @@ public class Code11 {
 
     // Decodifica amb Code11
     static String decode(String s) {
+        if(s.equals("")){
+            return null;
+        }
         String initialCode = s.trim();
 
         String[] barcode = barCodeCode(initialCode);
@@ -107,7 +110,7 @@ public class Code11 {
 
         int aux = 0;
 
-        String result = setFinalCode(big, little, barcodeS, aux);
+        String result = setFinalCode(big, barcodeS, aux);
         if (result.equals("ERROR")) {
             return null;
         }
@@ -116,8 +119,11 @@ public class Code11 {
         if (result.charAt(0) != '*') {
             boolean state = true;
             while (state) {
+                if (aux >= big){
+                    return null;
+                }
                 aux++;
-                result = setFinalCode(big, little, barcodeS, aux);
+                result = setFinalCode(big, barcodeS, aux);
                 if (result.charAt(0) == '*') {
                     state = false;
                 }
@@ -206,7 +212,7 @@ public class Code11 {
 
     /*En esta funcion encontramos diversas funcionalidades pero la principal es la de pasar el codigo tipo string que nos mide pixel por pixel el string original a un codigo de 5 digitos que nos indica el grosor de un espacio
      * o parte dibujada en funcion de su valor y posicion de estos valores*/
-    private static String setFinalCode(int big, int little, String barcodeS, int aux) {
+    private static String setFinalCode(int big, String barcodeS, int aux) {
         String code = "";
         //Lo primero que hacemos es llamar a una funcion que nos pasa el string de codigo a una lista con todos los tamaños posibles de el string
         List<Integer> sizes = sizeColector(barcodeS);
@@ -220,7 +226,24 @@ public class Code11 {
         }
 
         //En este string vamos a guardar los codigos de cada caracter que queremos decodificar
-        String[] codes = new String[(sizes.size() / 5)];
+        String[] codes = makeCodes(sizes, big, code, aux);
+
+        StringBuilder strBuilded = new StringBuilder(barcodeS);
+        if (codes[0].equals("00100")){
+            StringBuilder strReveresed = strBuilded.reverse();
+            barcodeS = strReveresed.toString();
+            code = "";
+            sizes = sizeColector(barcodeS);
+            sizes.removeAll(Collections.singleton(0));
+            codes = makeCodes(sizes,big,code,aux);
+        }
+        //Llamamos a esta funcion que nos consigue dar en funcion de los codigos que pasamos el string final con el codigo ya decodificado
+        String finalCode = listCodes(codes);
+        return finalCode;
+    }
+
+    private static String[] makeCodes(List<Integer> sizes, int big, String code, int aux) {
+        String[] codes =  new String[(sizes.size() / 5)];
 
         int index = 0;
 
@@ -239,18 +262,15 @@ public class Code11 {
             }
         }
         codes[index] = code;
-
-        //Llamamos a esta funcion que nos consigue dar en funcion de los codigos que pasamos el string final con el codigo ya decodificado
-        String finalCode = listCodes(codes);
-        return finalCode;
+        return codes;
     }
+
 
     //La funcion que nos permite segun los codigos definidos en setFinalCode sacar el codigo ya decodificado
     private static String listCodes(String[] codes) {
         String finalCode = "";
         for (int i = 0; i < codes.length; i++) {
             String aux = "";
-
             switch (codes[i]) {
                 case "00001":
                     aux = "0";
@@ -352,7 +372,18 @@ public class Code11 {
                     aux += "█";
                 }
             }
+            aux =aux.trim();
+            if (aux.equals(" ")){
+                continue;
+            }
             result = decode(aux);
+            if (result == null){
+                aux = "";
+            }else if (result.contains("E")){
+                aux = "";
+            }else{
+                return result;
+            }
 
         }
 
