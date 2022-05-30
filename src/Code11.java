@@ -96,7 +96,7 @@ public class Code11 {
 
     // Decodifica amb Code11
     static String decode(String s) {
-        if(s.equals("")){
+        if (s.equals("")) {
             return null;
         }
         String initialCode = s.trim();
@@ -119,7 +119,7 @@ public class Code11 {
         if (result.charAt(0) != '*') {
             boolean state = true;
             while (state) {
-                if (aux >= big){
+                if (aux >= big) {
                     return null;
                 }
                 aux++;
@@ -229,20 +229,21 @@ public class Code11 {
         String[] codes = makeCodes(sizes, big, code, aux);
 
         StringBuilder strBuilded = new StringBuilder(barcodeS);
-        if (!codes[0].equals("00110")){
+        if (!codes[0].equals("00110")) {
             StringBuilder strReveresed = strBuilded.reverse();
             barcodeS = strReveresed.toString();
             code = "";
             sizes = sizeColector(barcodeS);
             sizes.removeAll(Collections.singleton(0));
-            codes = makeCodes(sizes,big,code,aux);}
+            codes = makeCodes(sizes, big, code, aux);
+        }
         //Llamamos a esta funcion que nos consigue dar en funcion de los codigos que pasamos el string final con el codigo ya decodificado
         String finalCode = listCodes(codes);
         return finalCode;
     }
 
     private static String[] makeCodes(List<Integer> sizes, int big, String code, int aux) {
-        String[] codes =  new String[(sizes.size() / 5)];
+        String[] codes = new String[(sizes.size() / 5)];
 
         int index = 0;
 
@@ -359,35 +360,51 @@ public class Code11 {
     public static String decodeImage(String str) {
         String aux = "";
         str = str.replace("\r", "");
-        Image pixels = new Image(str);
-
-        int[][] indvPixel = setIndividualPixel(pixels);
+        Image image = new Image(str);
+        boolean vertical = false;
+        int[][] indvPixel = setIndividualPixel(image);
         String result = "";
-        for (int i = 0; i < pixels.altura; i++) {
-            for (int j = 0; j < pixels.ancho; j++) {
+
+
+        for (int i = 0; i < image.altura; i++) {
+            for (int j = 0; j < image.ancho; j++) {
                 if (indvPixel[i][j] >= 100) {
                     aux += " ";
                 } else {
                     aux += "█";
                 }
             }
-            aux =aux.trim();
-            if (aux.equals(" ")){
+            aux = aux.trim();
+            if (aux.equals(" ")) {
                 continue;
             }
             result = decode(aux);
-            if (result == null){
+            if (result == null) {
                 aux = "";
-            }else if (result.contains("E")){
+            } else if (result.contains("E")) {
                 aux = "";
-            }else{
+            } else {
                 return result;
+            }
+        }
+        for (int i = 0; i < image.altura; i++) {
+            if (indvPixel[i][image.ancho / 2] >= 100) {
+                aux += " ";
+            } else {
+                aux += "█";
             }
 
         }
-
+        aux = aux.trim();
+        result = decode(aux);
+        if (result == null) {
+            aux = "";
+        } else if (result.contains("E")) {
+            aux = "";
+        } else {
+            return result;
+        }
         return null;
-
     }
 
     private static int[][] setIndividualPixel(Image pixels) {
