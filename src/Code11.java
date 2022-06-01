@@ -8,10 +8,7 @@
 //     https://products.aspose.app/barcode/generate
 
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 public class Code11 {
 
@@ -387,6 +384,7 @@ public class Code11 {
                 return result;
             }
         }
+
         for (int i = 0; i < image.altura; i++) {
             if (indvPixel[i][image.ancho / 2] >= 100) {
                 aux += " ";
@@ -423,10 +421,92 @@ public class Code11 {
         return indvPixel;
     }
 
-    // Genera imatge a partir de codi de barres
-    // Alçada: 100px
-    // Marges: vertical 4px, horizontal 8px
+    /* 12 6
+       Genera imatge a partir de codi de barres
+       Alçada: 100px
+       Marges: vertical 4px, horizontal 8px*/
     public static String generateImage(String s) {
-        return "";
+        String barrCode = encode(s);
+        String[][] pixels = prepareMarges(barrCode);
+        int altura = setAnchoAlto(pixels, 1);
+        int ancho = setAnchoAlto(pixels, 2);
+        pixels = insertPixels(pixels, barrCode);
+        String stringPPM = "P3\n" + ancho + " " + altura +"\n" + "255\n";
+        for (int i = 0; i < altura; i++) {
+            for (int j = 0; j < ancho; j++) {
+                for (int k = 0; k < 3; k++) {
+                    stringPPM += pixels[i][j] + "\n";
+                }
+            }
+        }
+        return stringPPM;
+    }
+
+    private static int setAnchoAlto(String[][] pixels, int i) {
+        int altura = pixels.length;
+        int ancho = pixels[0].length;
+        if (i == 1){
+            return  altura;
+        }else {
+            return ancho;
+        }
+    }
+
+    private static String[][] insertPixels(String[][] pixels, String barrCode) {
+        int aux = 0;
+        String[] auxPixels = setBarcodePixels(barrCode, aux);
+        for (int i = 4; i < 103; i++) {
+            aux = 0;
+            for (int j = 8; j < (barrCode.length()*6)+7; j++) {
+                pixels[i][j] = auxPixels[aux];
+                aux++;
+            }
+        }
+        return pixels;
+    }
+
+    private static String[] setBarcodePixels(String barrCode, int aux) {
+        String[] auxPixels = new String[barrCode.length() * 6];
+        for (int i = 0; i < barrCode.length(); i++) {
+            if (barrCode.charAt(i) == '█') {
+                for (int j = 0; j < 6; j++) {
+                    auxPixels[aux] = "0";
+                    aux++;
+                }
+            } else {
+                for (int j = 0; j < 6; j++) {
+                    auxPixels[aux] = "255";
+                    aux++;
+                }
+            }
+        }
+        return auxPixels;
+    }
+
+    private static String[][] prepareMarges(String barrCode) {
+        int anchoPX = (barrCode.length() * 6) + 16;
+        int altoPX = 108;
+        String[][] pixels = new String[altoPX][anchoPX];
+        for (int i = 0; i < 4; i++) {
+            for (int j = 0; j < anchoPX; j++) {
+                pixels[i][j] = "255";
+            }
+        }
+        for (int i = 1; i < 5; i++) {
+            for (int j = 0; j < anchoPX; j++) {
+                pixels[altoPX - i][j] = "255";
+            }
+        }
+        for (int i = 0; i < altoPX; i++) {
+            for (int j = 0; j < 8; j++) {
+                pixels[i][j] = "255";
+            }
+        }
+        for (int i = 0; i < altoPX; i++) {
+            for (int j = 1; j < 9; j++) {
+                pixels[i][anchoPX - j] = "255";
+            }
+        }
+        return pixels;
     }
 }
