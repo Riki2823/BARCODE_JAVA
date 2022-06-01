@@ -426,162 +426,39 @@ public class Code11 {
        Alçada: 100px
        Marges: vertical 4px, horizontal 8px*/
     public static String generateImage(String s) {
-        String barrCode = encode(s);
-        barrCode = setNewCode(barrCode);
-        String [][] pixels = insertPixels(barrCode);
-        int altura = setAnchoAlto(pixels, 1);
-        int ancho = setAnchoAlto(pixels, 2);
-        String stringPPM = "P3\n" + ancho + " " + altura +"\n" + "255\n";
-        for (int i = 0; i < altura; i++) {
-            for (int j = 0; j < ancho; j++) {
-                for (int k = 0; k < 3; k++) {
-                    stringPPM += pixels[i][j] + "\n";
-                }
-            }
-        }
-        return stringPPM;
+        String barrCodeBase = encode(s);
+        String[] pixels = setPixels(barrCodeBase);
+        return null;
     }
 
-    private static String setNewCode(String barrCode) {
-        String[] barcode= barCodeCode(barrCode);
-        String barcodeS = String.join("9", barcode);
-        String auxS = "";
+    private static String[] setPixels(String barrCodeBase) {
+        String[] code = barCodeCode(barrCodeBase);
+        String barcodeS = String.join("09", code);
         List<Integer> sizes = sizeColector(barcodeS);
-        int aux = 0;
-        int aux2 = 0;
+        String pixels = "";
         for (int i = 0; i < sizes.size(); i++) {
-            if (sizes.get(i) == 2 && barrCode.charAt(aux2) == '█'){
+
+            if (sizes.get(i) == 2 && i % 2 == 0) {
                 for (int j = 0; j < 10; j++) {
-                    auxS+= '█';
-                    aux++;
+                    pixels += "\n0";
                 }
-                aux2 += 2;
-            }else if (sizes.get(i) == 1 && barrCode.charAt(aux2) == '█'){
+            } else if (sizes.get(i) == 1 && i % 2 == 0) {
                 for (int j = 0; j < 3; j++) {
-                    auxS += "█";
-                    aux++;
+                    pixels += "\n0";
                 }
-                aux2++;
-            }else if (sizes.get(i) == 2 && barrCode.charAt(aux2) == ' '){
+            } else if (sizes.get(i) == 2 && i % 2 != 0) {
                 for (int j = 0; j < 10; j++) {
-                    auxS += " ";
-                    aux++;
+                    pixels += "\n255";
                 }
-                aux2 += 2;
-            }else {
+            } else if (sizes.get(i) == 1 && i % 2 != 0) {
                 for (int j = 0; j < 3; j++) {
-                    auxS += " ";
-                    aux++;
+                    pixels += "\n255";
                 }
-                aux2++;
             }
         }
-        return auxS;
-    }
+        pixels = pixels.substring(1, pixels.length());
+        String[] pixelsss = pixels.split("\n");
 
-    private static int setAnchoAlto(String[][] pixels, int i) {
-        int altura = pixels.length;
-        int ancho = pixels[0].length;
-        if (i == 1){
-            return  altura;
-        }else {
-            return ancho;
-        }
-    }
-
-    private static String[][] insertPixels(String barrCode) {
-        String[] barcode= barCodeCode(barrCode);
-        String barcodeS = String.join("9", barcode);
-        List<Integer> sizes = sizeColector(barcodeS);
-        int nBigs = 0;
-        int nLittle = 0;
-        for (int i = 0; i < sizes.size(); i++) {
-            if (sizes.get(i) == 2){
-                nBigs++;
-            }else{
-                nLittle++;
-            }
-        }
-        String[][] pixels = prepareMarges(barrCode, nBigs, nLittle);
-
-        int aux = 0;
-        String[] auxPixels = setBarcodePixels(sizes ,barrCode, aux);
-        for (int i = 4; i < 103; i++) {
-            aux = 0;
-            for (int j = 8; j < auxPixels.length; j++) {
-                pixels[i][j] = auxPixels[aux];
-                aux++;
-            }
-        }
-        return pixels;
-    }
-
-    private static String[] setBarcodePixels(List<Integer> sizes, String barrCode, int aux) {
-        int nBigs = 0;
-        int nLittle = 0;
-        for (int i = 0; i < sizes.size(); i++) {
-            if (sizes.get(i) == 2){
-                nBigs++;
-            }else{
-                nLittle++;
-            }
-        }
-        String[] auxPixels = new String[(nBigs*10)+(nLittle*3)];
-        int aux2 = 0;
-        for (int i = 0; i < sizes.size(); i++) {
-            if (sizes.get(i) == 2 && barrCode.charAt(aux2) == '█'){
-                for (int j = 0; j < 10; j++) {
-                    auxPixels[aux] = "0";
-                    aux++;
-                }
-                aux2 += 2;
-            }else if (sizes.get(i) == 1 && barrCode.charAt(aux2) == '█'){
-                for (int j = 0; j < 3; j++) {
-                    auxPixels[aux] = "0";
-                    aux++;
-                }
-                aux2++;
-            }else if (sizes.get(i) == 2 && barrCode.charAt(aux2) == ' '){
-                for (int j = 0; j < 10; j++) {
-                    auxPixels[aux] = "255";
-                    aux++;
-                }
-                aux2 += 2;
-            }else {
-                for (int j = 0; j < 3; j++) {
-                    auxPixels[aux] = "255";
-                    aux++;
-                }
-                aux2++;
-            }
-        }
-        return auxPixels;
-    }
-
-    private static String[][] prepareMarges(String barrCode, int nBigs, int nLittle) {
-        int anchoPX = (nBigs*10)+(nLittle*3)+16;
-        int altoPX = 108;
-        String[][] pixels = new String[altoPX][anchoPX];
-        for (int i = 0; i < 4; i++) {
-            for (int j = 0; j < anchoPX; j++) {
-                pixels[i][j] = "255";
-            }
-        }
-        for (int i = 1; i < 5; i++) {
-            for (int j = 0; j < anchoPX; j++) {
-                pixels[altoPX - i][j] = "255";
-            }
-        }
-        for (int i = 0; i < altoPX; i++) {
-            for (int j = 0; j < 8; j++) {
-                pixels[i][j] = "255";
-            }
-        }
-        for (int i = 0; i < altoPX; i++) {
-            for (int j = 1; j < 9; j++) {
-                pixels[i][anchoPX - j] = "255";
-            }
-        }
-        return pixels;
+        return pixelsss;
     }
 }
