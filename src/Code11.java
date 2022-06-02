@@ -357,8 +357,8 @@ public class Code11 {
     public static String decodeImage(String str) {
         String aux = "";
         str = str.replace("\r", "");
+        //Creamos un objeto que nos servira para guardar diferentes propiedades de nuestra imagen, como son el alto, el ancho o un array con los valores rgb de cada pixel de nuestra imagen.
         Image image = new Image(str);
-        boolean vertical = false;
         int[][] indvPixel = setIndividualPixel(image);
         String result = "";
 
@@ -421,14 +421,18 @@ public class Code11 {
         return indvPixel;
     }
 
-    /* 12 6
+    /* 10 3
        Genera imatge a partir de codi de barres
        Alçada: 100px
        Marges: vertical 4px, horizontal 8px*/
     public static String generateImage(String s) {
+        //Primero codificamos el string en una string formada por espacios y el caracter █;
         String barrCodeBase = encode(s);
+        //Luego llamamos una funcion que nos monta un string con los valores de los pixels
         String[] pixels = setPixels(barrCodeBase);
+        //En esta funcion creamos una array bidimensional de el tamaño de de la imagen en pixels (alto*ancho) introduciendo ya los margenes superior e inferior de 4 pixels y los laterales de 8 cada uno
         String[][] imageComplete = completeImage(pixels);
+        //Finalmente montamos la sting que devolvemos para  montar la imagen final
         String result = "P3\n" + imageComplete[0].length + " " + imageComplete.length + "\n" + "255\n";
         for (int i = 0; i < imageComplete.length; i++) {
             for (int j = 0; j < imageComplete[0].length; j++) {
