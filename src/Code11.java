@@ -428,7 +428,58 @@ public class Code11 {
     public static String generateImage(String s) {
         String barrCodeBase = encode(s);
         String[] pixels = setPixels(barrCodeBase);
-        return null;
+        String[][] imageComplete = completeImage(pixels);
+        String result = "P3\n" + imageComplete[0].length + " " + imageComplete.length + "\n" + "255\n";
+        for (int i = 0; i < imageComplete.length; i++) {
+            for (int j = 0; j < imageComplete[0].length; j++) {
+                for (int k = 0; k < 3; k++) {
+                    result += imageComplete[i][j] + "\n";
+                }
+            }
+        }
+        result = result.substring(0,result.length()-1);
+
+        return result;
+    }
+
+    private static String[][] completeImage(String[] pixels) {
+        int alto = 108;
+        int ancho = pixels.length + 16;
+        String[][] imageComplete = new  String[alto][ancho];
+        imageComplete = makeMagins(imageComplete, alto, ancho);
+        int aux = 0;
+        for (int i = 4; i < alto-4; i++) {
+            for (int j = 8; j < ancho-8; j++) {
+                imageComplete[i][j] = pixels[aux];
+                aux++;
+            }
+            aux = 0;
+        }
+        return imageComplete;
+    }
+
+    private static String[][] makeMagins(String[][] imageComplete, int alto, int ancho) {
+        for (int i = 0; i < 4; i++) {
+            for (int j = 0; j < ancho; j++) {
+                imageComplete[i][j] = "255";
+            }
+        }
+        for (int i = 4; i < alto; i++) {
+            for (int j = 0; j < 8; j++) {
+                imageComplete[i][j] = "255";
+            }
+        }
+        for (int i = 103; i < alto; i++) {
+            for (int j = 0; j < ancho; j++) {
+                imageComplete[i][j] = "255";
+            }
+        }
+        for (int i = 4; i < alto; i++) {
+            for (int j = ancho-8; j < ancho; j++) {
+                imageComplete[i][j] = "255";
+            }
+        }
+        return imageComplete;
     }
 
     private static String[] setPixels(String barrCodeBase) {
