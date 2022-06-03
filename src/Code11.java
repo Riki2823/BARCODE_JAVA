@@ -14,14 +14,14 @@ public class Code11 {
 
     // Codifica un String amb Code11
     static String encode(String s) {
-        char[] sChars = new char[s.length()];
+        char[] arChars = new char[s.length()];
         for (int i = 0; i < s.length(); i++) {
-            sChars[i] = s.charAt(i);
+            arChars[i] = s.charAt(i);
         }
         String on = "█";
         String off = " ";
 
-        String barcode = setBarrCode(sChars);
+        String barcode = setBarCode(arChars);
 
         String result = "";
         String[] bits = barcode.split("");
@@ -39,53 +39,53 @@ public class Code11 {
 
     /*Tenemos una fucion a la que pasamos un array con los caracteres de nuestro codigo inicial y en funcion de un caracter u otro vamos sumando
       Cadenas de simbolos a el string que devolvemos a la funcion encode*/
-    private static String setBarrCode(char[] sChars) {
+    private static String setBarCode(char[] sChars) {
         String barcode = "";
         for (int i = 0; i < sChars.length; i++) {
-            String aux = "";
+            String temporalS = "";
 
             switch (sChars[i]) {
                 case '*':
-                    aux = "█ ██  █";
+                    temporalS = "█ ██  █";
                     break;
                 case '0':
-                    aux = "█ █ ██";
+                    temporalS = "█ █ ██";
                     break;
                 case '1':
-                    aux = "██ █ ██";
+                    temporalS = "██ █ ██";
                     break;
                 case '2':
-                    aux = "█  █ ██";
+                    temporalS = "█  █ ██";
                     break;
                 case '3':
-                    aux = "██  █ █";
+                    temporalS = "██  █ █";
                     break;
                 case '4':
-                    aux = "█ ██ ██";
+                    temporalS = "█ ██ ██";
                     break;
                 case '5':
-                    aux = "██ ██ █";
+                    temporalS = "██ ██ █";
                     break;
                 case '6':
-                    aux = "█  ██ █";
+                    temporalS = "█  ██ █";
                     break;
                 case '7':
-                    aux = "█ █  ██";
+                    temporalS = "█ █  ██";
                     break;
                 case '8':
-                    aux = "██ █  █";
+                    temporalS = "██ █  █";
                     break;
                 case '9':
-                    aux = "██ █ █";
+                    temporalS = "██ █ █";
                     break;
                 case '-':
-                    aux = "█ ██ █";
+                    temporalS = "█ ██ █";
                     break;
             }
             if (i == sChars.length - 1) {
-                barcode += aux;
+                barcode += temporalS;
             } else {
-                barcode += aux + "-";
+                barcode += temporalS + "-";
             }
         }
         return barcode;
@@ -103,24 +103,25 @@ public class Code11 {
         String barcodeS = String.join("9", barcode);
 
         int big = setMesures(barcodeS, 1);
-        int little = setMesures(barcodeS, 2);
+        int auxSizes = 0;
 
-        int aux = 0;
+        String result = setFinalCode(big, barcodeS, auxSizes);
 
-        String result = setFinalCode(big, barcodeS, aux);
         if (result.equals("ERROR")) {
             return null;
         }
 
-
+        /*Si nuestro codigo final es devuelto de tal manera que el primer caracter no es un * eso quiere decir que nuestro indicador
+        * de grossor es incorrecto asi que en ese caso volveremos a llamar a la funcion setFinalCode pero esta vez con la variable auxiliar aumentada y en
+        * la funcion restaremos a el tamazo maximo de grossor el auxiliar de manera recursiva hasta que de correcto*/
         if (result.charAt(0) != '*') {
             boolean state = true;
             while (state) {
-                if (aux >= big) {
+                if (auxSizes >= big) {
                     return null;
                 }
-                aux++;
-                result = setFinalCode(big, barcodeS, aux);
+                auxSizes++;
+                result = setFinalCode(big, barcodeS, auxSizes);
                 if (result.charAt(0) == '*') {
                     state = false;
                 }
@@ -135,8 +136,8 @@ public class Code11 {
      * tendremos dos 9 que nos indican la separacion del * con el 0 y la separacion del 0 con el segundo * */
     private static String[] barCodeCode(String s) {
         /*
-         * false = espai
-         * true = barra
+         * false = espacio
+         * true = falso
          * */
         boolean estate = true;
         int[] barcode = new int[s.length()];
